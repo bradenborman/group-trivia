@@ -40,9 +40,11 @@ const Game = () => {
     // WebSocket setup
     const [client, setClient] = useState<Client | null>(null);
 
+     //Handles local and deployed testing
     useEffect(() => {
+        const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
         const wsClient = new Client({
-            brokerURL: 'ws://localhost:8080/ws',
+            brokerURL: `${protocol}://${window.location.host}/ws`,
             connectHeaders: {},
             debug: function (str) {
                 console.log(str);
@@ -51,7 +53,8 @@ const Game = () => {
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
             webSocketFactory: () => {
-                return new SockJS('http://localhost:8080/ws');
+                const sockJsProtocol = window.location.protocol === 'https:' ? 'https' : 'http';
+                return new SockJS(`${sockJsProtocol}://${window.location.host}/ws`);
             }
         });
 
@@ -66,6 +69,7 @@ const Game = () => {
             wsClient.deactivate();
         };
     }, []);
+
 
 
     useEffect(() => {
