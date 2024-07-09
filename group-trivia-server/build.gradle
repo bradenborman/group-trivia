@@ -1,0 +1,88 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.1'
+	id 'io.spring.dependency-management' version '1.1.5'
+}
+
+group = 'borman'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(19)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	runtimeOnly 'com.h2database:h2'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+tasks.register('copyClient') {
+	dependsOn ':group-trivia-client:clientBuild'
+
+	doFirst {
+		delete 'src/main/resources/static'
+		delete 'src/main/resources/templates'
+	}
+
+	doLast {
+		copy {
+			from project(':group-trivia-client').file('build')
+			into 'src/main/resources/static'
+		}
+		copy {
+			from project(':group-trivia-client').file('build/index.html')
+			into 'src/main/resources/templates'
+		}
+	}
+}
+
+tasks.named('jar') {
+	enabled = false
+}
+
+tasks.register('finalizeBuild', Copy) {
+	dependsOn 'build'
+
+	doLast {
+		println 'Renaming jar..'
+		from layout.buildDirectory.file("libs/group-trivia-server-${version}.jar")
+		into layout.buildDirectory.dir('libs')
+		rename { 'group-trivia.jar' }
+		delete layout.buildDirectory.file("libs/group-trivia-server-${version}.jar").asFile
+	}
+}
+
+tasks.named('processResources') {
+	dependsOn 'copyClient'
+}
+
+tasks.named('clean') {
+	dependsOn ':group-trivia-client:clientClean'
+}
+
+tasks.named('build') {
+	finalizedBy 'finalizeBuild'
+	mustRunAfter 'clean'
+}
+
+tasks.register('stage') {
+	dependsOn 'build'
+	dependsOn 'clean'
+}

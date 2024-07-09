@@ -1,0 +1,1 @@
+web java $JAVA_OPTS -Dserver.port=$PORT -jar group-trivia-server/build/libs/group-trivia-server-0.0.1-SNAPSHOT.jar

@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": [
+      "dom",
+      "es2015",
+      "es2017", // Add ES2017 for more modern JavaScript features
+      "esnext" // This includes the latest JavaScript features
+    ],
+    "jsx": "react-jsx", // Use the new JSX transform if you are using React 17+
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "baseUrl": "./src"
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "paths": {
+    "@components/*": [
+      "components/*"
+    ]
+  }
+}

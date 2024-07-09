@@ -1,0 +1,25 @@
+@import url("../menu/menu.scss");
+@import url("../game/game.scss");
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 100%; // 16px by default
+    line-height: 1.6;
+    font-family: 'Englebert', sans-serif;
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    color: #333;
+    font-family: 'Englebert', sans-serif;
+}

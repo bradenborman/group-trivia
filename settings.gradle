@@ -1,0 +1,2 @@
+rootProject.name = 'grouptrivia'
+include "group-trivia-server", "group-trivia-client"
