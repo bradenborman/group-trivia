@@ -90,13 +90,14 @@ public class GroupTriviaService {
 
     public Lobby createNewQuestion(NewQuestionRequest newQuestionRequest) {
         logger.info("Creating new question [code: {}, text: {}]", newQuestionRequest.getLobbyCode(), newQuestionRequest.getText());
-        int id = questionDao.createNewQuestion(newQuestionRequest.getLobbyCode(), newQuestionRequest.getText());
+        int id = questionDao.createNewQuestion(newQuestionRequest.getLobbyCode(), newQuestionRequest.getText(), newQuestionRequest.getPlayerIdWhoCreated());
 
         Question question = new Question();
         question.setId(id);
         question.setQuestionText(newQuestionRequest.getText());
         question.setLobbyCode(newQuestionRequest.getLobbyCode());
         question.setAnswersGivenList(Collections.emptyList());
+        question.setPlayerIdCreated(newQuestionRequest.getPlayerIdWhoCreated());
 
         messagingTemplate.convertAndSend("/topic/" + newQuestionRequest.getLobbyCode() + "/question-added", question);
 

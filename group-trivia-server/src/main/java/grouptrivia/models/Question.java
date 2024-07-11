@@ -9,6 +9,7 @@ public class Question {
     private String questionText;
     private List<Answer> answersGivenList;
     private boolean showAnswers;
+    private int playerIdCreated;
 
     public int getId() {
         return id;
@@ -48,5 +49,13 @@ public class Question {
 
     public void setShowAnswers(boolean showAnswers) {
         this.showAnswers = showAnswers;
+    }
+
+    public int getPlayerIdCreated() {
+        return playerIdCreated;
+    }
+
+    public void setPlayerIdCreated(int playerIdCreated) {
+        this.playerIdCreated = playerIdCreated;
     }
 }

@@ -14,6 +14,7 @@ public class QuestionRowMapper implements RowMapper<Question> {
         question.setId(rs.getInt("id"));
         question.setLobbyCode(rs.getString("lobby_code"));
         question.setQuestionText(rs.getString("text"));
+        question.setPlayerIdCreated(rs.getInt("playerIdWhoCreated"));
         return question;
     }
 

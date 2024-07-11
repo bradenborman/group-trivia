@@ -38,12 +38,13 @@ public class QuestionDao {
                 new QuestionRowMapper());
     }
 
-    public int createNewQuestion(String lobbyCode, String text) {
+    public int createNewQuestion(String lobbyCode, String text, int playerIdWhoCreated) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "INSERT INTO question (lobby_code, text) VALUES (:lobbyCode, :text)";
+        String sql = "INSERT INTO question (lobby_code, text, playerIdWhoCreated) VALUES (:lobbyCode, :text, :playerIdWhoCreated)";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("lobbyCode", lobbyCode);
         params.addValue("text", text);
+        params.addValue("playerIdWhoCreated", playerIdWhoCreated);
         namedParameterJdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
         return Objects.requireNonNull(keyHolder.getKey()).intValue();
     }

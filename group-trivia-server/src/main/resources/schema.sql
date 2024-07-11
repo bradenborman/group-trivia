@@ -14,6 +14,7 @@ CREATE TABLE question (
     id INT AUTO_INCREMENT PRIMARY KEY,
     lobby_code CHAR(8) NOT NULL,
     text VARCHAR(255) NOT NULL,
+    playerIdWhoCreated VARCHAR(50) NOT NULL,
     FOREIGN KEY (lobby_code) REFERENCES lobby(code)
 );
 

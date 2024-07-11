@@ -50,7 +50,6 @@ const Game = () => {
         if (process.env.NODE_ENV === 'production') {
             wsUrl = `${protocol}://${window.location.host}/ws`;
         } else {
-
             wsUrl = `${protocol}://localhost:${devPort}/ws`;
         }
 
@@ -89,9 +88,6 @@ const Game = () => {
             wsClient.deactivate();
         };
     }, []);
-
-
-
 
     useEffect(() => {
         if (!client) return;
@@ -164,7 +160,7 @@ const Game = () => {
     const handleAddQuestionSubmit = (event: { preventDefault: () => void; }) => {
         event.preventDefault();
         if (newQuestion.trim() !== '') {
-            axios.post(`/api/question`, { lobbyCode: gameCode, text: newQuestion.trim() })
+            axios.post(`/api/question`, { lobbyCode: gameCode, text: newQuestion.trim(), playerIdWhoCreated: userId })
                 .then(response => {
                     if (response.status === 200) {
                         // worked
@@ -221,16 +217,59 @@ const Game = () => {
         return "";
     };
 
+    // Conditional rendering based on whether questions exist
+    if (questions.length === 0) {
+        return (
+            <div id="game-page">
+                <div className="settings-bar">
+                    <FontAwesomeIcon icon={faHome} className="home-icon" onClick={() => navigate('/home')} />
+                    <div className='game-code'>Game Code: {gameCode}</div>
+                </div>
+                <div className="game-container">
+                    <div className="add-question-button">
+                        <button onClick={() => setIsModalOpen(true)}>Add Trivia Question</button>
+                    </div>
+                    <div className="no-questions-message">
+                        Add a question to begin
+                    </div>
+                </div>
+                {
+                    isModalOpen && (
+                        <div className="modal">
+                            <form onSubmit={handleAddQuestionSubmit}>
+                                <div className="modal-content">
+                                    <h3>Add New Question</h3>
+                                    <input
+                                        type="text"
+                                        id="new-question-input"
+                                        value={newQuestion}
+                                        onChange={(e) => setNewQuestion(e.target.value)}
+                                        autoComplete='off'
+                                    />
+                                    <div className="modal-buttons">
+                                        <button type="submit">Create</button>
+                                        <button type="button" onClick={() => setIsModalOpen(false)}>Close</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    )
+                }
+            </div>
+        );
+    }
+
+    // Render the table if questions exist
     return (
         <div id="game-page">
             <div className="settings-bar">
                 <FontAwesomeIcon icon={faHome} className="home-icon" onClick={() => navigate('/home')} />
-                <div className="add-question-button">
-                    <button onClick={() => setIsModalOpen(true)}>Add Trivia Question</button>
-                </div>
                 <div className='game-code'>Game Code: {gameCode}</div>
             </div>
             <div className="game-container">
+                <div className="add-question-button">
+                    <button onClick={() => setIsModalOpen(true)}>Add Trivia Question</button>
+                </div>
                 <div className="players-table">
                     <table>
                         <thead>
@@ -244,9 +283,9 @@ const Game = () => {
                         <tbody>
                             {questions.map((question) => (
                                 <tr key={question.id}>
-                                    <td className='question'>{question.questionText}</td>
+                                    <td className={question?.playerIdCreated.toString() == userId ? 'user-created question' : 'question'}>{question.questionText}</td>
                                     {users.map((user) => (
-                                        <td key={user.userId}>
+                                        <td key={user.userId} >
                                             {renderCellContent(question, user)}
                                         </td>
                                     ))}
