@@ -40,11 +40,22 @@ const Game = () => {
     // WebSocket setup
     const [client, setClient] = useState<Client | null>(null);
 
-     //Handles local and deployed testing
+    //Handles local and deployed testing
     useEffect(() => {
         const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        let wsUrl;
+        const devPort = 8080;
+
+        //Have to re-route traffic on diff port when running locally
+        if (process.env.NODE_ENV === 'production') {
+            wsUrl = `${protocol}://${window.location.host}/ws`;
+        } else {
+
+            wsUrl = `${protocol}://localhost:${devPort}/ws`;
+        }
+
         const wsClient = new Client({
-            brokerURL: `${protocol}://${window.location.host}/ws`,
+            brokerURL: wsUrl,
             connectHeaders: {},
             debug: function (str) {
                 console.log(str);
@@ -54,7 +65,16 @@ const Game = () => {
             heartbeatOutgoing: 4000,
             webSocketFactory: () => {
                 const sockJsProtocol = window.location.protocol === 'https:' ? 'https' : 'http';
-                return new SockJS(`${sockJsProtocol}://${window.location.host}/ws`);
+                let sockJsUrl;
+
+                //Have to re-route traffic on diff port when running locally
+                if (process.env.NODE_ENV === 'production') {
+                    sockJsUrl = `${sockJsProtocol}://${window.location.host}/ws`;
+                } else {
+                    sockJsUrl = `${sockJsProtocol}://localhost:${devPort}/ws`;
+                }
+
+                return new SockJS(sockJsUrl);
             }
         });
 
@@ -69,6 +89,7 @@ const Game = () => {
             wsClient.deactivate();
         };
     }, []);
+
 
 
 
