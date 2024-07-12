@@ -53,7 +53,7 @@ const Game = () => {
             brokerURL: wsUrl,
             connectHeaders: {},
             debug: function (str) {
-                console.log(str);
+                // console.log(str);
             },
             reconnectDelay: 5000,
             heartbeatIncoming: 4000,
@@ -102,6 +102,15 @@ const Game = () => {
             client.subscribe(`/topic/${gameCode}/question-deleted`, (message: IMessage) => {
                 const deletedQuestionId: number = JSON.parse(message.body);
                 setQuestions(prevQuestions => prevQuestions.filter(q => q.id !== deletedQuestionId));
+            });
+
+            client.subscribe(`/topic/${gameCode}/show-answer`, (message: IMessage) => {
+                const questionIdToShowAnswers: number = JSON.parse(message.body);
+                setQuestions(prevQuestions =>
+                    prevQuestions.map(question =>
+                        question.id === questionIdToShowAnswers ? { ...question, showAnswers: true } : question
+                    )
+                );
             });
 
             client.subscribe(`/topic/${gameCode}/question-answered`, (message: IMessage) => {
@@ -158,14 +167,14 @@ const Game = () => {
                 alert("You have switched tabs or minimized the window!");
             }
         };
-    
+
         document.addEventListener('visibilitychange', handleVisibilityChange);
-    
+
         return () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
     }, []);
-    
+
 
 
     const handleAddQuestionSubmit = (event: { preventDefault: () => void; }) => {

@@ -107,8 +107,7 @@ public class GroupTriviaService {
     private void populateAnswersToQuestion(Question question, int size) {
         List<Answer> answers = answerDao.findAnswersByQuestionId(question.getId());
         question.setAnswersGivenList(answers);
-        question.setShowAnswers(answers.size() == size && size >=
-                3);
+        question.setShowAnswers(answers.size() == size);
     }
 
     public Lobby answerQuestion(AnswerQuestionRequest answerQuestionRequest) {
@@ -122,6 +121,10 @@ public class GroupTriviaService {
         newAnswer.setUserId(answerQuestionRequest.getUserId());
 
         messagingTemplate.convertAndSend("/topic/" + answerQuestionRequest.getLobbyCode() + "/question-answered", newAnswer);
+
+        if(lobbyDao.areAllPlayersAnswered(answerQuestionRequest.getLobbyCode(), answerQuestionRequest.getQuestionId()))
+            messagingTemplate.convertAndSend("/topic/" + answerQuestionRequest.getLobbyCode() + "/show-answer", answerQuestionRequest.getQuestionId());
+
 
         return findLobbyByCode(answerQuestionRequest.getLobbyCode());
     }
