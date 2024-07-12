@@ -4,13 +4,12 @@ import axios from 'axios';
 import { Question } from 'models/question';
 import { useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faHome } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faHome, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Player } from 'models/player';
 import SockJS from 'sockjs-client';
 import { Client, IMessage } from '@stomp/stompjs';
 import Answer from 'models/answer';
 
-// Define the LocationState interface
 interface LocationState {
     displayName: string;
     userId: string;
@@ -37,16 +36,13 @@ const Game = () => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [users, setUsers] = useState<Player[]>([]);
 
-    // WebSocket setup
     const [client, setClient] = useState<Client | null>(null);
 
-    //Handles local and deployed testing
     useEffect(() => {
         const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
         let wsUrl;
         const devPort = 8080;
 
-        //Have to re-route traffic on diff port when running locally
         if (process.env.NODE_ENV === 'production') {
             wsUrl = `${protocol}://${window.location.host}/ws`;
         } else {
@@ -66,7 +62,6 @@ const Game = () => {
                 const sockJsProtocol = window.location.protocol === 'https:' ? 'https' : 'http';
                 let sockJsUrl;
 
-                //Have to re-route traffic on diff port when running locally
                 if (process.env.NODE_ENV === 'production') {
                     sockJsUrl = `${sockJsProtocol}://${window.location.host}/ws`;
                 } else {
@@ -94,7 +89,6 @@ const Game = () => {
 
         client.onConnect = (frame) => {
             console.log('Connected: ' + frame);
-            // Subscribe to WebSocket topics
             client.subscribe(`/topic/${gameCode}/player-joined`, (message: IMessage) => {
                 const newPlayer: Player = JSON.parse(message.body);
                 setUsers(prevUsers => [...prevUsers, newPlayer]);
@@ -103,6 +97,11 @@ const Game = () => {
             client.subscribe(`/topic/${gameCode}/question-added`, (message: IMessage) => {
                 const newQuestion: Question = JSON.parse(message.body);
                 setQuestions(prevQuestions => [...prevQuestions, newQuestion]);
+            });
+
+            client.subscribe(`/topic/${gameCode}/question-deleted`, (message: IMessage) => {
+                const deletedQuestionId: number = JSON.parse(message.body);
+                setQuestions(prevQuestions => prevQuestions.filter(q => q.id !== deletedQuestionId));
             });
 
             client.subscribe(`/topic/${gameCode}/question-answered`, (message: IMessage) => {
@@ -128,7 +127,6 @@ const Game = () => {
                         return updatedQuestions;
                     }
 
-                    // Return previous questions if no question was found (should not happen in typical usage)
                     return prevQuestions;
                 });
             });
@@ -136,7 +134,6 @@ const Game = () => {
 
         client.activate();
 
-        // Clean up: Disconnect WebSocket on component unmount
         return () => {
             client.deactivate();
         };
@@ -145,7 +142,6 @@ const Game = () => {
     useEffect(() => {
         axios.get(`/api/lobby/${gameCode}`).then(response => {
             if (response.status === 200) {
-                console.log(response.data);
                 setQuestions(response.data.questionList || []);
                 setUsers(response.data.playerList || []);
             } else {
@@ -156,6 +152,21 @@ const Game = () => {
         });
     }, [gameCode, navigate]);
 
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'hidden') {
+                alert("You have switched tabs or minimized the window!");
+            }
+        };
+    
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, []);
+    
+
 
     const handleAddQuestionSubmit = (event: { preventDefault: () => void; }) => {
         event.preventDefault();
@@ -163,7 +174,6 @@ const Game = () => {
             axios.post(`/api/question`, { lobbyCode: gameCode, text: newQuestion.trim(), playerIdWhoCreated: userId })
                 .then(response => {
                     if (response.status === 200) {
-                        // worked
                     }
                 })
                 .catch(error => {
@@ -188,8 +198,6 @@ const Game = () => {
             axios.post(`/api/answer`, requestData)
                 .then(response => {
                     if (response.status === 200) {
-                        const lobby = response.data;
-                        // setQuestions(lobby.questionList || []);
                     }
                 })
                 .catch(error => {
@@ -198,12 +206,24 @@ const Game = () => {
         }
     };
 
+    const handleDeleteQuestion = (questionId: number) => {
+        axios.delete(`/api/question/${questionId}`, { params: { lobbyCode: gameCode } })
+            .then(response => {
+                if (response.status === 200) {
+                    setQuestions(prevQuestions => prevQuestions.filter(q => q.id !== questionId));
+                }
+            })
+            .catch(error => {
+                console.error("Error deleting question:", error);
+            });
+    };
+
     const renderCellContent = (question: Question, user: Player) => {
         const userIdNumber = Number.parseInt(user.userId);
         const userAnswer = question.answersGivenList?.find(answer => answer.userId === userIdNumber);
 
         if (question.showAnswers) {
-            return userAnswer ? userAnswer.answerText : "";
+            return userAnswer ? <div className={(question.playerIdCreated == userAnswer.userId) ? "correct-answer" : ""}>{userAnswer.answerText}</div> : "";
         }
 
         if (userAnswer) {
@@ -211,13 +231,22 @@ const Game = () => {
         }
 
         if (user.userId === userId) {
-            return <button onClick={() => handleAnswerQuestion(question.id)}>Answer</button>;
+            return (
+                <>
+                    <button onClick={() => handleAnswerQuestion(question.id)}>Answer</button>
+                    {question.playerIdCreated.toString() == userId && (
+                        <button className="delete-button" onClick={() => handleDeleteQuestion(question.id)}>
+                            <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                    )}
+                </>
+            );
         }
 
         return "";
     };
 
-    // Conditional rendering based on whether questions exist
+
     if (questions.length === 0) {
         return (
             <div id="game-page">
@@ -259,7 +288,6 @@ const Game = () => {
         );
     }
 
-    // Render the table if questions exist
     return (
         <div id="game-page">
             <div className="settings-bar">
@@ -283,11 +311,11 @@ const Game = () => {
                         <tbody>
                             {questions.map((question) => (
                                 <tr key={question.id}>
-                                    <td className={question?.playerIdCreated.toString() == userId ? 'user-created question' : 'question'}>{question.questionText}</td>
+                                    <td>
+                                        {question.questionText}
+                                    </td>
                                     {users.map((user) => (
-                                        <td key={user.userId} >
-                                            {renderCellContent(question, user)}
-                                        </td>
+                                        <td key={user.userId}>{renderCellContent(question, user)}</td>
                                     ))}
                                 </tr>
                             ))}
@@ -319,6 +347,6 @@ const Game = () => {
             }
         </div>
     );
-};
+}
 
 export default Game;

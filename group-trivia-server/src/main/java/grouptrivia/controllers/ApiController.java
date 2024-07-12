@@ -44,4 +44,10 @@ public class ApiController {
         return ResponseEntity.ok(groupTriviaService.answerQuestion(answerQuestionRequest));
     }
 
+    @DeleteMapping("/question/{questionId}")
+    public ResponseEntity<Void> deleteQuestion(@PathVariable int questionId, @RequestParam String lobbyCode) {
+        groupTriviaService.deleteQuestion(questionId, lobbyCode);
+        return ResponseEntity.ok().build();
+    }
+
 }

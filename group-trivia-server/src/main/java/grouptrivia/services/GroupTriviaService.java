@@ -126,4 +126,10 @@ public class GroupTriviaService {
         return findLobbyByCode(answerQuestionRequest.getLobbyCode());
     }
 
+    public void deleteQuestion(int questionId, String lobbyCode) {
+        logger.info("Deleting question with ID: {} from lobby: {}", questionId, lobbyCode);
+        questionDao.deleteQuestionByIdAndLobbyCode(questionId, lobbyCode);
+        messagingTemplate.convertAndSend("/topic/" + lobbyCode + "/question-deleted", questionId);
+    }
+
 }

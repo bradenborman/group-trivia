@@ -90,9 +90,17 @@
                 font-size: 1.2em;
             }
 
-            td.user-created {
-                font-weight: bold;
+
+            td {
+                button {
+                    margin: 0px .6rem;
+                }
+
+                div.correct-answer {
+                    color: lightgreen;
+                }
             }
+
 
             th:first-child,
             td:first-child {

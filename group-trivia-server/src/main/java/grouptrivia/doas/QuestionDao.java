@@ -48,4 +48,13 @@ public class QuestionDao {
         namedParameterJdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
         return Objects.requireNonNull(keyHolder.getKey()).intValue();
     }
+
+    public void deleteQuestionByIdAndLobbyCode(int questionId, String lobbyCode) {
+        String sql = "DELETE FROM question WHERE id = :questionId AND lobby_code = :lobbyCode";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("questionId", questionId)
+                .addValue("lobbyCode", lobbyCode);
+        namedParameterJdbcTemplate.update(sql, params);
+    }
+
 }
