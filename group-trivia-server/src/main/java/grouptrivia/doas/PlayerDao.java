@@ -27,8 +27,8 @@ public class PlayerDao {
                 "VALUES (:displayName, :lobbyCode)";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("displayName", displayName)
-                .addValue("lobbyCode", lobbyCode);
+                .addValue("displayName", displayName.trim())
+                .addValue("lobbyCode", lobbyCode.trim());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(sql, parameters, keyHolder, new String[]{"user_id"});

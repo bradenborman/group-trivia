@@ -40,7 +40,7 @@ public class AnswerDao {
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("userId", userId)
                 .addValue("questionId", questionId)
-                .addValue("answerText", answerText);
+                .addValue("answerText", answerText.trim());
 
         namedParameterJdbcTemplate.update(sql, parameters,  keyHolder, new String[]{"id"});
         return Objects.requireNonNull(keyHolder.getKey()).intValue();

@@ -25,8 +25,8 @@ public class QuestionDao {
                 "VALUES (:lobbyCode, :question)";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("lobbyCode", lobbyCode)
-                .addValue("question", question);
+                .addValue("lobbyCode", lobbyCode.trim())
+                .addValue("question", question.trim());
 
         namedParameterJdbcTemplate.update(sql, parameters);
     }
@@ -42,8 +42,8 @@ public class QuestionDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO question (lobby_code, text, playerIdWhoCreated) VALUES (:lobbyCode, :text, :playerIdWhoCreated)";
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("lobbyCode", lobbyCode);
-        params.addValue("text", text);
+        params.addValue("lobbyCode", lobbyCode.trim());
+        params.addValue("text", text.trim());
         params.addValue("playerIdWhoCreated", playerIdWhoCreated);
         namedParameterJdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
         return Objects.requireNonNull(keyHolder.getKey()).intValue();

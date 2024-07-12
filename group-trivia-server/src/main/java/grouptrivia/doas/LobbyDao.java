@@ -14,7 +14,7 @@ public class LobbyDao {
     }
 
     public void createLobby(String lobbyCode) {
-        namedParameterJdbcTemplate.update("INSERT INTO lobby (code) VALUES :lobbyCode", new MapSqlParameterSource().addValue("lobbyCode", lobbyCode));
+        namedParameterJdbcTemplate.update("INSERT INTO lobby (code) VALUES :lobbyCode", new MapSqlParameterSource().addValue("lobbyCode", lobbyCode.trim()));
     }
 
     public boolean doesLobbyExist(String lobbyCode) {

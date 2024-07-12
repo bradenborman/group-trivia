@@ -12,6 +12,7 @@ import grouptrivia.models.Question;
 import grouptrivia.models.requests.AnswerQuestionRequest;
 import grouptrivia.models.requests.NewQuestionRequest;
 import grouptrivia.utilities.LobbyCodeUtility;
+import grouptrivia.validators.QuestionValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -89,6 +90,9 @@ public class GroupTriviaService {
     }
 
     public Lobby createNewQuestion(NewQuestionRequest newQuestionRequest) {
+
+        QuestionValidator.validateQuestion(newQuestionRequest.getText());
+
         logger.info("Creating new question [code: {}, text: {}]", newQuestionRequest.getLobbyCode(), newQuestionRequest.getText());
         int id = questionDao.createNewQuestion(newQuestionRequest.getLobbyCode(), newQuestionRequest.getText(), newQuestionRequest.getPlayerIdWhoCreated());
 

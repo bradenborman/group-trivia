@@ -1,5 +1,6 @@
 package grouptrivia.controllers;
 
+import grouptrivia.exceptions.InvalidQuestionUserProvided;
 import grouptrivia.exceptions.LobbyDoesNotExistException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,12 @@ public class ExceptionController {
     @ExceptionHandler(LobbyDoesNotExistException.class)
     public ResponseEntity<String> handleLobbyDoesNotExistException(LobbyDoesNotExistException ex) {
         logger.error("Lobby does not exist: {}", ex.getLobbyCode());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidQuestionUserProvided.class)
+    public ResponseEntity<String> handleInvalidQuestionUserProvidedException(InvalidQuestionUserProvided ex) {
+        logger.error("Invalid Question provided: {}", ex.getQuestionProvided());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
