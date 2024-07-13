@@ -12,6 +12,7 @@ import grouptrivia.models.Question;
 import grouptrivia.models.requests.AnswerQuestionRequest;
 import grouptrivia.models.requests.NewQuestionRequest;
 import grouptrivia.utilities.LobbyCodeUtility;
+import grouptrivia.validators.LobbyValidator;
 import grouptrivia.validators.QuestionValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,8 @@ public class GroupTriviaService {
     }
 
     public Lobby createNewLobby(String startingPlayersDisplayName) {
+        LobbyValidator.validatePlayerName(startingPlayersDisplayName);
+
         String lobbyCode = LobbyCodeUtility.generateLobbyCode();
         lobbyDao.createLobby(lobbyCode);
         logger.info("{} is attempting to create new lobby with code: {}", startingPlayersDisplayName, lobbyCode);
@@ -62,6 +65,8 @@ public class GroupTriviaService {
 
     public int joinLobby(String lobbyCode, String displayName) {
         logger.info("{} is attempting to join the game of {}", displayName, lobbyCode);
+        LobbyValidator.validatePlayerName(displayName);
+
         int newId = playerDao.insertPlayer(displayName, lobbyCode);
         Player playerToAdd = new Player();
         playerToAdd.setDisplayName(displayName);

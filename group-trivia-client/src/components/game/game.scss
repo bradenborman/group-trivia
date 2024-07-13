@@ -36,7 +36,7 @@
     }
 
     .game-container {
-        width: clamp(300px, 95%, 1500px);
+        width: clamp(300px, 95%, 10000px);
         /* Adjusted width with clamp */
         padding: 1rem;
         margin-top: 1rem;
@@ -84,12 +84,13 @@
                 text-align: center;
                 white-space: normal;
                 word-wrap: break-word;
+                min-width: 100px;
+                max-width: 300px;
             }
 
             td.question {
                 font-size: 1.2em;
             }
-
 
             td {
                 button {
@@ -100,7 +101,6 @@
                     color: lightgreen;
                 }
             }
-
 
             th:first-child,
             td:first-child {
@@ -152,7 +152,8 @@
             border-radius: 10px;
             text-align: center;
             color: #000;
-            width: 33vw;
+            width: 75vw;
+            max-width: 600px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 
             h3 {
@@ -189,6 +190,26 @@
                     }
                 }
             }
+        }
+    }
+}
+
+@media (max-width: 768px) {
+
+    #game-page {
+        .game-container {
+            .players-table {
+                td,
+                th {
+                    padding: 0.8rem;
+                    font-size: 1em;
+                }
+            }
+        }
+
+        .modal .modal-content {
+            width: 95%;
+            margin: auto;
         }
     }
 }

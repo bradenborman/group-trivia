@@ -1,5 +1,6 @@
 package grouptrivia.controllers;
 
+import grouptrivia.exceptions.InvalidPlayerNameException;
 import grouptrivia.exceptions.InvalidQuestionUserProvided;
 import grouptrivia.exceptions.LobbyDoesNotExistException;
 import org.slf4j.Logger;
@@ -25,5 +26,12 @@ public class ExceptionController {
         logger.error("Invalid Question provided: {}", ex.getQuestionProvided());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
+
+    @ExceptionHandler(InvalidPlayerNameException.class)
+    public ResponseEntity<String> handleInvalidPlayerNameException(InvalidPlayerNameException ex) {
+        logger.error("Invalid player name provided: {}", ex.getPlayerNameEntered());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
 
 }
