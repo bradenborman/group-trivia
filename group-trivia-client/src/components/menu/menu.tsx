@@ -1,21 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './menu.scss';
 import Lobby from 'models/lobby';
 
 const Menu: React.FC = () => {
     const navigate = useNavigate();
-
-    /*
-        Comment here lol
-    */
+    const location = useLocation();
 
     const [showJoinGamePopup, setShowJoinGamePopup] = useState(false);
     const [showStartGamePopup, setShowStartGamePopup] = useState(false);
     const [joinGameData, setJoinGameData] = useState({ gameCode: '', displayName: '' });
     const [playerName, setPlayerName] = useState('');
+
+    // useEffect to check for join parameter in URL on component mount
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const joinCode = params.get('join');
+
+        if (joinCode) {
+            setShowJoinGamePopup(true);
+            setJoinGameData(prevData => ({
+                ...prevData,
+                gameCode: joinCode,
+            }));
+        }
+    }, [location.search]);
 
     const handleJoinGame = () => {
         setShowJoinGamePopup(true);
@@ -49,13 +59,14 @@ const Menu: React.FC = () => {
         e.preventDefault();
         const { gameCode, displayName } = joinGameData;
         if (gameCode && gameCode.length >= 3 && displayName && displayName.length >= 3) {
-
             axios.put('/api/lobby', { lobbyCode: gameCode, displayName })
                 .then(response => {
                     const userId: number = response.data;
-                    if (response.status == 200)
+                    if (response.status === 200) {
                         navigate(`/game/${gameCode}`, { state: { displayName: playerName, userId } });
-                }).catch(error => {
+                    }
+                })
+                .catch(error => {
                     console.error('Error joining lobby:', error);
                 })
                 .finally(() => {

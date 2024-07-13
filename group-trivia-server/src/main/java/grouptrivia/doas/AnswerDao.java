@@ -45,4 +45,12 @@ public class AnswerDao {
         namedParameterJdbcTemplate.update(sql, parameters,  keyHolder, new String[]{"id"});
         return Objects.requireNonNull(keyHolder.getKey()).intValue();
     }
+
+    public void deleteAnswersToQuestion(int questionId) {
+        String sql = "DELETE FROM answer WHERE question_id = :questionId";
+        MapSqlParameterSource parameters = new MapSqlParameterSource().addValue("questionId", questionId);
+        namedParameterJdbcTemplate.update(sql, parameters);
+    }
+
+
 }

@@ -140,6 +140,7 @@ public class GroupTriviaService {
 
     public void deleteQuestion(int questionId, String lobbyCode) {
         logger.info("Deleting question with ID: {} from lobby: {}", questionId, lobbyCode);
+        answerDao.deleteAnswersToQuestion(questionId);
         questionDao.deleteQuestionByIdAndLobbyCode(questionId, lobbyCode);
         messagingTemplate.convertAndSend("/topic/" + lobbyCode + "/question-deleted", questionId);
     }

@@ -28,6 +28,10 @@ const Game = () => {
         displayName = state.displayName;
         userId = state.userId;
     } catch {
+
+        if (gameCode)
+            return <Navigate to={`/home?join=${gameCode}`} replace />;
+
         return <Navigate to="/home" replace />;
     }
 
@@ -164,7 +168,7 @@ const Game = () => {
     useEffect(() => {
         const handleVisibilityChange = () => {
             if (document.visibilityState === 'hidden') {
-                alert("You have switched tabs or minimized the window!");
+                // alert("You have switched tabs or minimized the window!");
             }
         };
 
@@ -311,20 +315,18 @@ const Game = () => {
                     <table>
                         <thead>
                             <tr>
-                                <th>Question</th>
-                                {users.map((user) => (
-                                    <th key={user.userId}>{user.displayName}</th>
+                                <th></th>
+                                {questions.map((question) => (
+                                    <th key={question.id}>{question.questionText}</th>
                                 ))}
                             </tr>
                         </thead>
                         <tbody>
-                            {questions.map((question) => (
-                                <tr key={question.id}>
-                                    <td>
-                                        {question.questionText}
-                                    </td>
-                                    {users.map((user) => (
-                                        <td key={user.userId}>{renderCellContent(question, user)}</td>
+                            {users.map((user) => (
+                                <tr key={user.userId}>
+                                    <td>{user.userId == userId ? "⭐" : ""}{user.displayName}</td>
+                                    {questions.map((question) => (
+                                        <td key={question.id}>{renderCellContent(question, user)}</td>
                                     ))}
                                 </tr>
                             ))}
@@ -356,6 +358,7 @@ const Game = () => {
             }
         </div>
     );
+
 }
 
 export default Game;
