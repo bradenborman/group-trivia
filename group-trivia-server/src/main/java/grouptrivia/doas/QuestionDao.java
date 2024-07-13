@@ -57,4 +57,12 @@ public class QuestionDao {
         namedParameterJdbcTemplate.update(sql, params);
     }
 
+    public List<Question> findQuestionsByUserIdAndLobbyCode(String userId, String lobbyCode) {
+        String sql = "SELECT * FROM question WHERE playerIdWhoCreated = :userId AND lobby_code = :lobbyCode";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("userId", userId)
+                .addValue("lobbyCode", lobbyCode);
+        return namedParameterJdbcTemplate.query(sql, params, new QuestionRowMapper());
+    }
+
 }

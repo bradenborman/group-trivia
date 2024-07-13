@@ -89,6 +89,24 @@ const Game = () => {
     }, []);
 
     useEffect(() => {
+        const handleUnload = () => {
+            axios.delete(`/api/lobby/${gameCode}/player/${userId}`)
+                .then(() => {
+
+                })
+                .catch(error => { });
+        };
+
+        window.addEventListener('beforeunload', handleUnload);
+        window.addEventListener('unload', handleUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleUnload);
+            window.removeEventListener('unload', handleUnload);
+        };
+    }, [gameCode, userId, client]);
+
+    useEffect(() => {
         if (!client) return;
 
         client.onConnect = (frame) => {
@@ -101,6 +119,11 @@ const Game = () => {
             client.subscribe(`/topic/${gameCode}/question-added`, (message: IMessage) => {
                 const newQuestion: Question = JSON.parse(message.body);
                 setQuestions(prevQuestions => [...prevQuestions, newQuestion]);
+            });
+
+            client.subscribe(`/topic/${gameCode}/player-deleted`, (message: IMessage) => {
+                const playerRemovedId: number = JSON.parse(message.body);
+                setUsers(prevUsers => prevUsers.filter(player => Number.parseInt(player.userId) != playerRemovedId));
             });
 
             client.subscribe(`/topic/${gameCode}/question-deleted`, (message: IMessage) => {

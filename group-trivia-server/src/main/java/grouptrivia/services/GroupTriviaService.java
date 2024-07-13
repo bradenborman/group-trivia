@@ -145,4 +145,15 @@ public class GroupTriviaService {
         messagingTemplate.convertAndSend("/topic/" + lobbyCode + "/question-deleted", questionId);
     }
 
+    public void deletePlayerAndCleanup(String lobbyCode, String userId) {
+        logger.info("Deleting player with user ID: {} from lobby: {}", userId, lobbyCode);
+        List<Question> userQuestions = questionDao.findQuestionsByUserIdAndLobbyCode(userId, lobbyCode);
+        for (Question question : userQuestions) {
+            deleteQuestion(question.getId(), lobbyCode);
+        }
+        playerDao.deletePlayerByIdAndLobbyCode(userId, lobbyCode);
+        messagingTemplate.convertAndSend("/topic/" + lobbyCode + "/player-deleted", userId);
+    }
+
+
 }

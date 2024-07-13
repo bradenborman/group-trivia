@@ -44,4 +44,13 @@ public class PlayerDao {
 
         return namedParameterJdbcTemplate.query(sql, parameters, new PlayerRowMapper());
     }
+
+    public void deletePlayerByIdAndLobbyCode(String userId, String lobbyCode) {
+        String sql = "DELETE FROM player WHERE user_id = :userId AND lobby_code = :lobbyCode";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("userId", userId)
+                .addValue("lobbyCode", lobbyCode);
+        namedParameterJdbcTemplate.update(sql, params);
+    }
+
 }
