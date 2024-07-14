@@ -125,8 +125,14 @@ const Menu: React.FC = () => {
                 </div>
                 <div className={'how-to-play-wrapper ' + (showRules ? 'show' : '')}>
                     <div className="content">
-                        {/* Content of your component */}
-                        <p>This is the content of your component.</p>
+                        <h4>How to Play</h4>
+                        <ul>
+                            <li>Start by joining an already established game or create your own!</li>
+                            <li>Once you join a lobby, click the 'Create Trivia Questiion' button to add any questions</li>
+                            <li>As Players join, new rows will be added to the screen</li>
+                            <li>As Trivia Questions come in, new columns will be added to the screen</li>
+                            <li>Click the 'Anser' button to submit an answer.</li>
+                        </ul>
                         <button className="close-button" onClick={() => setShowRules(false)}>Close</button>
                     </div>
                 </div>
