@@ -143,6 +143,7 @@ const Menu: React.FC = () => {
                                 autoComplete='off'
                                 required
                                 minLength={3}
+                                maxLength={18}
                             />
                             <div className="popup-buttons">
                                 <button type="button" className="popup-button" onClick={handleCloseJoinGamePopup}>
@@ -180,6 +181,7 @@ const Menu: React.FC = () => {
                                 required
                                 autoComplete='off'
                                 minLength={3}
+                                maxLength={18}
                             />
                             <div className="popup-buttons">
                                 <button type="button" className="popup-button" onClick={handleCloseStartGamePopup}>
