@@ -37,14 +37,23 @@ const Menu: React.FC = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setJoinGameData(prevData => ({
-            ...prevData,
-            [name]: value,
-        }));
+
+        // Ensure no spaces in the value
+        if (!/\s/.test(value)) {
+            setJoinGameData(prevData => ({
+                ...prevData,
+                [name]: value,
+            }));
+        }
     };
 
     const handlePlayerNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPlayerName(e.target.value);
+        const value = e.target.value;
+
+        // Ensure no spaces in the value
+        if (!/\s/.test(value)) {
+            setPlayerName(value);
+        }
     };
 
     const handleCloseJoinGamePopup = () => {
@@ -58,7 +67,10 @@ const Menu: React.FC = () => {
     const handleJoinGameSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const { gameCode, displayName } = joinGameData;
-        if (gameCode && gameCode.length >= 3 && displayName && displayName.length >= 3) {
+
+        // Validate gameCode and displayName (no spaces)
+        if (gameCode && gameCode.length >= 3 && !/\s/.test(gameCode) &&
+            displayName && displayName.length >= 3 && !/\s/.test(displayName)) {
             axios.put('/api/lobby', { lobbyCode: gameCode, displayName })
                 .then(response => {
                     const userId: number = response.data;
@@ -70,15 +82,16 @@ const Menu: React.FC = () => {
                     console.error('Error joining lobby:', error);
                 })
                 .finally(() => {
-                    setShowStartGamePopup(false);
+                    setShowJoinGamePopup(false);
                 });
         }
-        setShowJoinGamePopup(false);
     };
 
     const handleStartGameSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (playerName && playerName.length >= 3) {
+
+        // Validate playerName (no spaces)
+        if (playerName && playerName.length >= 3 && !/\s/.test(playerName)) {
             axios.post('/api/lobby', { playerName })
                 .then(response => {
                     const lobby: Lobby = response.data;
@@ -141,8 +154,10 @@ const Menu: React.FC = () => {
                                     disabled={
                                         !joinGameData.gameCode ||
                                         joinGameData.gameCode.length < 4 ||
+                                        /\s/.test(joinGameData.gameCode) ||
                                         !joinGameData.displayName ||
-                                        joinGameData.displayName.length <= 3
+                                        joinGameData.displayName.length <= 3 ||
+                                        /\s/.test(joinGameData.displayName)
                                     }
                                 >
                                     Join
@@ -173,7 +188,7 @@ const Menu: React.FC = () => {
                                 <button
                                     type="submit"
                                     className="popup-button"
-                                    disabled={!playerName || playerName.length < 3}
+                                    disabled={!playerName || playerName.length < 3 || /\s/.test(playerName)}
                                 >
                                     Start Game
                                 </button>
