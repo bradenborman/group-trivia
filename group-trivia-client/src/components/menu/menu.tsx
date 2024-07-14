@@ -14,7 +14,7 @@ const Menu: React.FC = () => {
 
     const [showJoinGamePopup, setShowJoinGamePopup] = useState(false);
     const [showStartGamePopup, setShowStartGamePopup] = useState(false);
-    const [showRules, setShowRules] = useState(true);
+    const [showRules, setShowRules] = useState(false);
     const [joinGameData, setJoinGameData] = useState({ gameCode: '', displayName: '' });
     const [playerName, setPlayerName] = useState('');
 
