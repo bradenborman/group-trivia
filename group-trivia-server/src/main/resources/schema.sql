@@ -7,6 +7,7 @@ CREATE TABLE player (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     display_name VARCHAR(255) NOT NULL,
     lobby_code CHAR(8) NOT NULL,
+    last_activity_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (lobby_code) REFERENCES lobby(code)
 );
 

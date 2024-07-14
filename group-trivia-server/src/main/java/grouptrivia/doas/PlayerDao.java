@@ -53,4 +53,19 @@ public class PlayerDao {
         namedParameterJdbcTemplate.update(sql, params);
     }
 
+    public void updatePlayerLastActivity(String lobbyCode, String userId) {
+        String sql = "UPDATE player SET last_activity_time = CURRENT_TIMESTAMP WHERE user_id = :userId AND lobby_code = :lobbyCode";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("userId", userId)
+                .addValue("lobbyCode", lobbyCode);
+        namedParameterJdbcTemplate.update(sql, params);
+    }
+
+    public List<Player> findUsersInactiveForSeconds(int seconds) {
+        String sql = "SELECT * FROM player WHERE last_activity_time <= DATEADD('SECOND', - :seconds, NOW())";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("seconds", seconds);
+        return namedParameterJdbcTemplate.query(sql, params, new PlayerRowMapper());
+    }
+
 }

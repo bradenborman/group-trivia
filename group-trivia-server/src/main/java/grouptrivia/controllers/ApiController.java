@@ -50,9 +50,16 @@ public class ApiController {
         return ResponseEntity.ok().build();
     }
 
+    @Deprecated
     @DeleteMapping("/lobby/{lobbyCode}/player/{userId}")
     public ResponseEntity<Void> deletePlayerAndCleanup(@PathVariable String lobbyCode, @PathVariable String userId) {
         groupTriviaService.deletePlayerAndCleanup(lobbyCode, userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/lobby/{lobbyCode}/player-check-in/{userId}")
+    public ResponseEntity<Void> playerCheckIn(@PathVariable String lobbyCode, @PathVariable String userId) {
+        groupTriviaService.updatePlayerLastActivity(lobbyCode, userId);
         return ResponseEntity.ok().build();
     }
 

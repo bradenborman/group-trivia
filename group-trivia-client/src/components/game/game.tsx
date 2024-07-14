@@ -89,24 +89,6 @@ const Game = () => {
     }, []);
 
     useEffect(() => {
-        const handleUnload = () => {
-            axios.delete(`/api/lobby/${gameCode}/player/${userId}`)
-                .then(() => {
-
-                })
-                .catch(error => { });
-        };
-
-        window.addEventListener('beforeunload', handleUnload);
-        window.addEventListener('unload', handleUnload);
-
-        return () => {
-            window.removeEventListener('beforeunload', handleUnload);
-            window.removeEventListener('unload', handleUnload);
-        };
-    }, [gameCode, userId, client]);
-
-    useEffect(() => {
         if (!client) return;
 
         client.onConnect = (frame) => {
@@ -201,6 +183,15 @@ const Game = () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
     }, []);
+
+    useEffect(() => {
+        //updates my backend tables to say user is still here
+        const interval = setInterval(() => {
+            axios.get(`/api/lobby/${gameCode}/player-check-in/${userId}`).then(response => { }).catch(() => { });
+        }, 5000); // 5 seconds
+        return () => clearInterval(interval);
+    }, [gameCode, navigate]);
+
 
 
 
