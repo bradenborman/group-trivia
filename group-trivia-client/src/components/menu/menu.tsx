@@ -3,6 +3,10 @@ import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './menu.scss';
 import Lobby from 'models/lobby';
+import { isValidGameCode, isValidDisplayName, isValidPlayerName } from '../../utilities/validation';
+import JoinGamePopup from './components/joinGamePopup';
+import MenuButton from './components/menuButton';
+import StartGamePopup from './components/startGamePopup';
 
 const Menu: React.FC = () => {
     const navigate = useNavigate();
@@ -10,10 +14,10 @@ const Menu: React.FC = () => {
 
     const [showJoinGamePopup, setShowJoinGamePopup] = useState(false);
     const [showStartGamePopup, setShowStartGamePopup] = useState(false);
+    const [showRules, setShowRules] = useState(true);
     const [joinGameData, setJoinGameData] = useState({ gameCode: '', displayName: '' });
     const [playerName, setPlayerName] = useState('');
 
-    // useEffect to check for join parameter in URL on component mount
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const joinCode = params.get('join');
@@ -35,25 +39,23 @@ const Menu: React.FC = () => {
         setShowStartGamePopup(true);
     };
 
+    const handleShowRules = () => {
+        setShowRules(true);
+    };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-
-        // Ensure no spaces in the value
-        if (!/\s/.test(value)) {
-            setJoinGameData(prevData => ({
-                ...prevData,
-                [name]: value,
-            }));
-        }
+        const filteredValue = value.replace(/\s/g, ''); // Remove spaces
+        setJoinGameData(prevData => ({
+            ...prevData,
+            [name]: filteredValue,
+        }));
     };
 
     const handlePlayerNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-
-        // Ensure no spaces in the value
-        if (!/\s/.test(value)) {
-            setPlayerName(value);
-        }
+        const filteredValue = value.replace(/\s/g, ''); // Remove spaces
+        setPlayerName(filteredValue);
     };
 
     const handleCloseJoinGamePopup = () => {
@@ -68,9 +70,7 @@ const Menu: React.FC = () => {
         e.preventDefault();
         const { gameCode, displayName } = joinGameData;
 
-        // Validate gameCode and displayName (no spaces)
-        if (gameCode && gameCode.length >= 3 && !/\s/.test(gameCode) &&
-            displayName && displayName.length >= 3 && !/\s/.test(displayName)) {
+        if (isValidGameCode(gameCode) && isValidDisplayName(displayName)) {
             axios.put('/api/lobby', { lobbyCode: gameCode, displayName })
                 .then(response => {
                     const userId: number = response.data;
@@ -84,14 +84,14 @@ const Menu: React.FC = () => {
                 .finally(() => {
                     setShowJoinGamePopup(false);
                 });
+        } else {
+            console.error('Invalid game code or display name');
         }
     };
 
     const handleStartGameSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        // Validate playerName (no spaces)
-        if (playerName && playerName.length >= 3 && !/\s/.test(playerName)) {
+        if (isValidPlayerName(playerName)) {
             axios.post('/api/lobby', { playerName })
                 .then(response => {
                     const lobby: Lobby = response.data;
@@ -103,6 +103,8 @@ const Menu: React.FC = () => {
                 .finally(() => {
                     setShowStartGamePopup(false);
                 });
+        } else {
+            console.error('Invalid player name');
         }
     };
 
@@ -111,93 +113,41 @@ const Menu: React.FC = () => {
             <div className="menu-wrapper">
                 <h1 className="menu-title">Group Trivia</h1>
                 <div className="menu-options">
-                    <button className="menu-button" onClick={handleStartGame}>
+                    <MenuButton onClick={handleStartGame}>
                         New Game
-                    </button>
-                    <button className="menu-button" onClick={handleJoinGame}>
+                    </MenuButton>
+                    <MenuButton onClick={handleJoinGame}>
                         Join Game
-                    </button>
+                    </MenuButton>
+                    <MenuButton onClick={handleShowRules}>
+                        How to Play
+                    </MenuButton>
+                </div>
+                <div className={'how-to-play-wrapper ' + (showRules ? 'show' : '')}>
+                    <div className="content">
+                        {/* Content of your component */}
+                        <p>This is the content of your component.</p>
+                        <button className="close-button" onClick={() => setShowRules(false)}>Close</button>
+                    </div>
                 </div>
             </div>
 
             {showJoinGamePopup && (
-                <div className="popup-backdrop">
-                    <div className="popup">
-                        <form onSubmit={handleJoinGameSubmit}>
-                            <input
-                                type="text"
-                                name="gameCode"
-                                placeholder="Game Code"
-                                value={joinGameData.gameCode}
-                                onChange={handleChange}
-                                required
-                                autoComplete='off'
-                                minLength={8}
-                            />
-                            <input
-                                type="text"
-                                name="displayName"
-                                placeholder="Player Name"
-                                value={joinGameData.displayName}
-                                onChange={handleChange}
-                                autoComplete='off'
-                                required
-                                minLength={3}
-                                maxLength={18}
-                            />
-                            <div className="popup-buttons">
-                                <button type="button" className="popup-button" onClick={handleCloseJoinGamePopup}>
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="popup-button"
-                                    disabled={
-                                        !joinGameData.gameCode ||
-                                        joinGameData.gameCode.length < 4 ||
-                                        /\s/.test(joinGameData.gameCode) ||
-                                        !joinGameData.displayName ||
-                                        joinGameData.displayName.length <= 3 ||
-                                        /\s/.test(joinGameData.displayName)
-                                    }
-                                >
-                                    Join
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <JoinGamePopup
+                    joinGameData={joinGameData}
+                    handleChange={handleChange}
+                    handleClose={handleCloseJoinGamePopup}
+                    handleSubmit={handleJoinGameSubmit}
+                />
             )}
 
             {showStartGamePopup && (
-                <div className="popup-backdrop">
-                    <div className="popup">
-                        <form onSubmit={handleStartGameSubmit}>
-                            <input
-                                type="text"
-                                placeholder="Your Name"
-                                value={playerName}
-                                onChange={handlePlayerNameChange}
-                                required
-                                autoComplete='off'
-                                minLength={3}
-                                maxLength={18}
-                            />
-                            <div className="popup-buttons">
-                                <button type="button" className="popup-button" onClick={handleCloseStartGamePopup}>
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="popup-button"
-                                    disabled={!playerName || playerName.length < 3 || /\s/.test(playerName)}
-                                >
-                                    Start Game
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <StartGamePopup
+                    playerName={playerName}
+                    handlePlayerNameChange={handlePlayerNameChange}
+                    handleClose={handleCloseStartGamePopup}
+                    handleSubmit={handleStartGameSubmit}
+                />
             )}
         </div>
     );
