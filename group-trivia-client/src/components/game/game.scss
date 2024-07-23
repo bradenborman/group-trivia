@@ -36,14 +36,15 @@
     }
 
     .game-container {
-        width: clamp(300px, 95%, 10000px);
-        /* Adjusted width with clamp */
+        width: clamp(300px, 95%, 1000px);
         padding: 1rem;
         margin-top: 1rem;
         background-color: rgba(255, 255, 255, 0.05);
         border-radius: 1rem;
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
         font-size: 1.2em;
+        overflow-x: auto;
+        /* Add this line to enable horizontal scrolling */
 
         .add-question-button {
             display: flex;
@@ -67,13 +68,30 @@
             }
         }
 
-        .players-table {
-            overflow-x: auto;
-            margin-top: 1rem;
+        .question-container {
+            padding: 1rem;
+            margin: 2rem 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
 
-            table {
+            h3 {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 1.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .users-data {
                 width: 100%;
                 border-collapse: collapse;
+
+                .star {
+                    font-size: .8em;
+                } 
+
 
                 thead {
                     tr {
@@ -92,90 +110,58 @@
 
                 th,
                 td {
-                    padding: 1rem;
-                    border: 2px solid #fff;
+                    padding: 0.5rem;
+                    border: 1px solid rgba(255, 255, 255, 0.3);
                     text-align: center;
-                    white-space: normal;
+                    white-space: nowrap;
+                    /* Prevent text from wrapping */
                     word-wrap: break-word;
-                    min-width: 200px;
+                    min-width: 100px;
+                    /* Set a minimum width for table cells */
                 }
 
-                td.question {
-                    font-size: 1.2em;
-                    pointer-events: none;
-                    user-select: none;
-                }
-
-                td {
-                    button {
-                        margin: .4rem;
-                    }
-
-                    div.correct-answer {
-                        color: lightgreen;
-                        text-decoration: underline;
-                    }
-                }
-
-                .checkmark {
-                    color: lightgreen;
-                    font-size: 1.5em;
-                }
-
-                button {
-                    padding: 0.5rem 1rem;
-                    font-size: 1rem;
-                    color: #fff;
+                th {
                     background-color: rgba(255, 255, 255, 0.2);
-                    border: 2px solid #fff;
-                    border-radius: 0.5rem;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
+                }
+
+                .correct-answer {
+                    color: lightgreen;
+                    text-decoration: underline;
+                    font-size: 1.1em;
+                    font-weight: bold;
+                }
+            }
+
+            .checkmark {
+                color: lightgreen;
+                font-size: 1.5em;
+            }
+
+            button {
+                padding: 0.5rem 1rem;
+                font-size: 1rem;
+                color: #fff;
+                background-color: rgba(255, 255, 255, 0.2);
+                border: 2px solid #fff;
+                border-radius: 0.5rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+
+                &:hover {
+                    background-color: rgba(255, 255, 255, 0.4);
+                    transform: translateY(-2px);
+                }
+
+                &.delete-button {
+                    margin-left: 0.5rem;
+                    background-color: rgba(255, 0, 0, 0.6);
 
                     &:hover {
-                        background-color: rgba(255, 255, 255, 0.4);
-                        transform: translateY(-2px);
+                        background-color: rgba(255, 0, 0, 0.8);
                     }
                 }
             }
-
-            &::-webkit-scrollbar {
-                height: 12px;
-                /* Adjust the height of the scrollbar */
-            }
-
-            &::-webkit-scrollbar-track {
-                background: rgba(255, 255, 255, 0.1);
-                /* Background of the scrollbar track */
-                border-radius: 10px;
-            }
-
-            &::-webkit-scrollbar-thumb {
-                background-color: rgba(255, 255, 255, 0.5);
-                /* Color of the scrollbar thumb */
-                border-radius: 10px;
-                border: 2px solid transparent;
-                /* Optional border to add space around thumb */
-                background-clip: padding-box;
-            }
-
-            &::-webkit-scrollbar-thumb:hover {
-                background-color: rgba(255, 255, 255, 0.8);
-                /* Color of the scrollbar thumb on hover */
-            }
-
-            /* For Firefox */
-            scrollbar-width: thin;
-            /* 'auto' or 'thin' */
-            scrollbar-color: rgba(255, 255, 255, 0.5) rgba(255, 255, 255, 0.1);
-            /* thumb and track color */
-
-
-
         }
-
-
-
     }
 
     .modal {
@@ -238,16 +224,13 @@
 }
 
 @media (max-width: 768px) {
-
     #game-page {
         .game-container {
-            .players-table {
 
-                td,
-                th {
-                    padding: 0.8rem;
-                    font-size: 1em;
-                }
+            th,
+            td {
+                padding: 0.8rem;
+                font-size: 1em;
             }
         }
 

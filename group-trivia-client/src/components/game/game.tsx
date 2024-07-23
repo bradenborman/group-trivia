@@ -245,12 +245,16 @@ const Game = () => {
             });
     };
 
-    const renderCellContent = (question: Question, user: Player) => {
+    const renderUserContent = (question: Question, user: Player) => {
         const userIdNumber = Number.parseInt(user.userId);
         const userAnswer = question.answersGivenList?.find(answer => answer.userId === userIdNumber);
 
         if (question.showAnswers) {
-            return userAnswer ? <div className={(question.playerIdCreated == userAnswer.userId) ? "correct-answer" : ""}>{userAnswer.answerText}</div> : "";
+            return userAnswer ? (
+                <div className={(question.playerIdCreated == userAnswer.userId) ? "correct-answer" : ""}>
+                    {userAnswer.answerText}
+                </div>
+            ) : null;
         }
 
         if (userAnswer) {
@@ -261,7 +265,7 @@ const Game = () => {
             return (
                 <>
                     <button onClick={() => handleAnswerQuestion(question.id)}>Answer</button>
-                    {question.playerIdCreated.toString() == userId && (
+                    {question.playerIdCreated.toString() === userId && (
                         <button className="delete-button" onClick={() => handleDeleteQuestion(question.id)}>
                             <FontAwesomeIcon icon={faTrash} />
                         </button>
@@ -270,8 +274,9 @@ const Game = () => {
             );
         }
 
-        return "";
+        return null;
     };
+
 
 
     if (questions.length === 0) {
@@ -325,53 +330,54 @@ const Game = () => {
                 <div className="add-question-button">
                     <button onClick={() => setIsModalOpen(true)}>Add Trivia Question</button>
                 </div>
-                <div className="players-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th></th>
-                                {questions.map((question) => (
-                                    <th key={question.id}>{question.questionText}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {users.map((user) => (
-                                <tr key={user.userId}>
-                                    <td>{user.userId == userId ? "⭐" : ""}{user.displayName}</td>
-                                    {questions.map((question) => (
-                                        <td key={question.id}>{renderCellContent(question, user)}</td>
+                {questions.map((question) => (
+                    <div key={question.id} className="question-container">
+                        <h3>{question.questionText}</h3>
+                        <table className="users-data">
+                            <thead>
+                                <tr>
+                                    {users.map((user) => (
+                                        <th key={user.userId}>{user.displayName} {user.userId === userId && <span className="star">⭐</span>}</th>
+                                    ))}                         
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    {users.map((user) => (
+                                        <td key={user.userId}>
+                                            {renderUserContent(question, user)}
+                                        </td>
                                     ))}
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            {
-                isModalOpen && (
-                    <div className="modal">
-                        <form onSubmit={handleAddQuestionSubmit}>
-                            <div className="modal-content">
-                                <h3>Add New Question</h3>
-                                <input
-                                    type="text"
-                                    id="new-question-input"
-                                    value={newQuestion}
-                                    onChange={(e) => setNewQuestion(e.target.value)}
-                                    autoComplete='off'
-                                />
-                                <div className="modal-buttons">
-                                    <button type="submit">Create</button>
-                                    <button type="button" onClick={() => setIsModalOpen(false)}>Close</button>
-                                </div>
-                            </div>
-                        </form>
+                            </tbody>
+                        </table>
                     </div>
-                )
-            }
+                ))}
+            </div>
+            {isModalOpen && (
+                <div className="modal">
+                    <form onSubmit={handleAddQuestionSubmit}>
+                        <div className="modal-content">
+                            <h3>Add New Question</h3>
+                            <input
+                                type="text"
+                                id="new-question-input"
+                                value={newQuestion}
+                                onChange={(e) => setNewQuestion(e.target.value)}
+                                autoComplete='off'
+                            />
+                            <div className="modal-buttons">
+                                <button type="submit">Create</button>
+                                <button type="button" onClick={() => setIsModalOpen(false)}>Close</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            )}
         </div>
     );
+
+
 
 }
 
