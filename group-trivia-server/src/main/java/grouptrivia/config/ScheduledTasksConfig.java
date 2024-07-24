@@ -20,7 +20,7 @@ public class ScheduledTasksConfig {
 
     @Scheduled(cron = "*/5 * * * * *") // Cron expression for every 5 seconds
     public void findUsersInactiveForSecondsAndRemove() {
-        groupTriviaService.findUsersInactiveForSecondsAndRemove();
+//        groupTriviaService.findUsersInactiveForSecondsAndRemove();
     }
 
 }
