@@ -1,10 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
 #game-page {
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #6b11cbbb 0%, #2575fc 100%);
-    color: #fff;
+    background: linear-gradient(135deg, #6b11cbbb 0%, #4a8af8 100%);
     font-family: 'Englebert', sans-serif;
     padding: 1rem;
 
@@ -71,19 +72,16 @@
 
         .question-container {
             padding: 1rem;
-            margin: 2rem 0;
+            margin: 2.5rem 0;
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 0.5rem;
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
             overflow-x: auto;
-            /* Enable horizontal scrolling */
             overflow-y: hidden;
-            /* Hide vertical scrollbar if not needed */
             scrollbar-width: thin;
-            /* For Firefox */
             scrollbar-color: #888 #f1f1f1;
-            /* For Firefox */
+            text-transform: uppercase;
 
             /* Custom WebKit scrollbar */
             &::-webkit-scrollbar {
@@ -114,8 +112,9 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                font-size: 1.5rem;
-                margin-bottom: 0.5rem;
+                font-size: 2rem;
+                margin-bottom: 0.8rem;
+                font-family: "Bebas Neue", sans-serif;
 
                 &.question {
                     -webkit-user-select: none;
