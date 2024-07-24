@@ -332,7 +332,7 @@ const Game = () => {
                 </div>
                 {questions.map((question) => (
                     <div key={question.id} className="question-container">
-                        <h3>{question.questionText}</h3>
+                        <h3 className='question'>{question.questionText}</h3>
                         <table className="users-data">
                             <thead>
                                 <tr>
