@@ -265,7 +265,7 @@ const Game = () => {
             return (
                 <>
                     <button onClick={() => handleAnswerQuestion(question.id)}>Answer</button>
-                    {question.playerIdCreated.toString() === userId && (
+                    {question.playerIdCreated.toString() == userId && (
                         <button className="delete-button" onClick={() => handleDeleteQuestion(question.id)}>
                             <FontAwesomeIcon icon={faTrash} />
                         </button>
@@ -338,7 +338,10 @@ const Game = () => {
                                 <tr>
                                     {users.map((user) => (
                                         <th key={user.userId}>{user.displayName} {user.userId === userId && <span className="star">⭐</span>}</th>
-                                    ))}                         
+                                    ))}
+                                    {users.length < 4 && Array.from({ length: 4 - users.length }, (_, index) => (
+                                        <th key={`placeholder-${index}`}></th>
+                                    ))}
                                 </tr>
                             </thead>
                             <tbody>
@@ -347,6 +350,9 @@ const Game = () => {
                                         <td key={user.userId}>
                                             {renderUserContent(question, user)}
                                         </td>
+                                    ))}
+                                    {users.length < 4 && Array.from({ length: 4 - users.length }, (_, index) => (
+                                        <th key={`placeholder-${index}`}></th>
                                     ))}
                                 </tr>
                             </tbody>
